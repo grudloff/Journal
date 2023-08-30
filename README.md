@@ -24,12 +24,22 @@ To run the journal web app locally, follow these steps:
    git clone https://github.com/yourusername/journal-webapp.git
    ```
 
-2. Install the required dependencies. Navigate to the project directory and run:
+2.a. Install the required dependencies using pip. Navigate to the project directory and run:
 
    ```bash
    pip install -r requirements.txt
    ```
 
+2.b. Or install the required dependencies using conda to run the code in a virtual environment. Navigate to the project directory and run:
+
+   ```bash
+   conda env create -f environment.yml
+   ```
+Then to activate the newly created environment with name "journal", run:
+
+   ```bash
+   conda activate journal
+   ```
 3. Ensure you have a MongoDB instance set up. You will need the connection URI which can be stored as a secret in your Streamlit Sharing account or in a `.secrets.toml` file.
 
 4. Create a `.streamlit` directory in the root of your project (if not already present), and create a `config.toml` file inside it. Add the following lines to the `config.toml` file, replacing `<your-mongo-uri>` with your MongoDB connection URI:

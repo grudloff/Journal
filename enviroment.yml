@@ -1,0 +1,7 @@
+name: journal
+channels:
+  - conda-forge
+dependencies:
+  - streamlit
+  - pymongo
+  - dnspython

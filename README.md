@@ -24,7 +24,8 @@ To run the journal web app locally, follow these steps:
    git clone https://github.com/yourusername/journal-webapp.git
    ```
 
-2. Install the required rependencies
+2. Install the required rependencies:
+
      a. Using pip. Navigate to the project directory and run:
 
       ```bash

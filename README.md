@@ -24,13 +24,14 @@ To run the journal web app locally, follow these steps:
    git clone https://github.com/yourusername/journal-webapp.git
    ```
 
-2.a. Install the required dependencies using pip. Navigate to the project directory and run:
+2. Install the required rependencies
+(a) Using pip. Navigate to the project directory and run:
 
    ```bash
    pip install -r requirements.txt
    ```
 
-2.b. Or install the required dependencies using conda to run the code in a virtual environment. Navigate to the project directory and run:
+(b) Or using conda to run the code in a virtual environment. Navigate to the project directory and run:
 
    ```bash
    conda env create -f environment.yml

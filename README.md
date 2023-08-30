@@ -25,13 +25,13 @@ To run the journal web app locally, follow these steps:
    ```
 
 2. Install the required rependencies
-(a) Using pip. Navigate to the project directory and run:
+a. Using pip. Navigate to the project directory and run:
 
    ```bash
    pip install -r requirements.txt
    ```
 
-(b) Or using conda to run the code in a virtual environment. Navigate to the project directory and run:
+b. Or using conda to run the code in a virtual environment. Navigate to the project directory and run:
 
    ```bash
    conda env create -f environment.yml

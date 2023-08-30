@@ -72,7 +72,7 @@ To run the journal web app locally, follow these steps:
 
 ## Blog Entry
 
-I've written a blog post about the development of this journal web app. Check it out for more details and insights:
+I've written a blog post about the development of this journal web app. There I go into detail about using atlas MongoDB hosting and Streamlit Community Cloud to serve the webapp. Check it out for more details and insights:
 
 [Read the blog post](https://grudloff.github.io/blog/mongodb_journal/)
 

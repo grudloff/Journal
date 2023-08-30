@@ -3,11 +3,16 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from datetime import datetime
 
+TEXT_HEIGHT = 300
+
 # change logo to a book
 st.set_page_config(
-    page_title="Diario Personal",
+    page_title="Personal Journal",
     page_icon="📖"
 )
+
+def reset_modifying():
+    st.session_state["modifying"] = False
 
 # Initialize connection.
 @st.cache_resource
@@ -21,7 +26,6 @@ client = init_connection()
 # Uses st.cache_data to only rerun when the query changes or after 10 min.
 @st.cache_data(ttl=600)
 def get_data(num_entries, start_date, end_date):
-    #start_date to end of day
     start_date = datetime.combine(start_date, datetime.max.time())
     end_date = datetime.combine(end_date, datetime.min.time())
     try:
@@ -39,9 +43,9 @@ def get_data(num_entries, start_date, end_date):
 
 if not st.session_state.get("modifying", False):
     # Add a new entry.
-    st.subheader("Add Entry")
-    entry = st.text_area(label="Entry", height=300, label_visibility="hidden")
-    submit = st.button("Add entry")
+    st.subheader("New Entry")
+    entry = st.text_area(label="Entry", height=TEXT_HEIGHT, label_visibility="hidden")
+    submit = st.button("Add entry", use_container_width=True)
 
     st.divider()
     
@@ -73,7 +77,6 @@ if not st.session_state.get("modifying", False):
         st.markdown(f"**{date} -**  {item['entry']}")
         modify = st.button("Modify", key="modify_"+repr(item["_id"]),
                              use_container_width=True)
-        st.divider()
         # option to modify
         if modify:
             st.session_state["modifying"] = True
@@ -84,17 +87,22 @@ if not st.session_state.get("modifying", False):
 
 else:
     # Modify an existing entry.
-    st.subheader("Modify Entry")
+    header_columns = st.columns(3)
+
+    header_columns[0].subheader("Modify Entry")
+    header_columns[2].button("Return", key="come_back", use_container_width=True,
+                             on_click = reset_modifying)
     id = st.session_state["id"]
     date = st.session_state["date"]
-    entry = st.text_area("Entry", st.session_state["entry"])
-    #two columns for two buttons
+    entry = st.text_area("Entry", st.session_state["entry"], height=TEXT_HEIGHT,
+                         label_visibility="hidden")
+
     col1, col2 = st.columns(2)
 
     delete = col1.button("Delete entry", use_container_width=True)
     if delete:
         client.journal_entries.entries.delete_one(
-            {"_id": id, "date": date},
+            {"_id": id},
         )
         st.session_state["modifying"] = False
         get_data.clear()
@@ -103,8 +111,8 @@ else:
     submit = col2.button("Modify entry", use_container_width=True)
     if submit:
         client.journal_entries.entries.update_one(
-            {"_id": id, "date": date},
-            {"$set": {"date": date, "entry": entry}},
+            {"_id": id},
+            {"$set": {"entry": entry}},
         )
         st.session_state["modifying"] = False
         get_data.clear()

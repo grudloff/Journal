@@ -22,6 +22,12 @@ def init_connection():
 
 client = init_connection()
 
+try:
+    user_name = st.experimental_user["name"]
+    st.toast(f"Hello {user_name}! 👋")
+except KeyError:
+    st.toast("Hello! 👋")
+
 # Pull data from the collection.
 # Uses st.cache_data to only rerun when the query changes or after 10 min.
 @st.cache_data(ttl=600)

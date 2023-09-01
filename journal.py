@@ -23,8 +23,13 @@ def init_connection():
 client = init_connection()
 
 try:
-    user_name = st.experimental_user["name"]
-    st.toast(f"Hello {user_name}! 👋")
+    user = st.experimental_user
+    if "name" in user.keys():
+        user_name = user["name"]
+        st.toast(f"Hello {user_name}! 👋")
+    else:
+        email = user["email"]
+        st.toast(f"{email} logged in! 👋")
 except KeyError:
     st.toast("Hello! 👋")
 

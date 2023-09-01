@@ -14,6 +14,10 @@ This repository contains a simple web application for maintaining a personal jou
 - Filter entries by date range.
 - Display previous journal entries.
 
+## Changelog
+
+- 01-09-2023: Added authentication through streamlit-authenticator package.
+
 ## Getting Started
 
 To run the journal web app locally, follow these steps:
@@ -44,11 +48,29 @@ To run the journal web app locally, follow these steps:
       ```
 3. Ensure you have a MongoDB instance set up. You will need the connection URI.
 
-4. Create a `.streamlit` directory in the root of your project (if not already present), and create a `secrets.toml` file inside it. Add the following lines to the `secrets.toml` file, replacing `<your-mongo-uri>` with your MongoDB connection URI:
+4. Create a `.streamlit` directory in the root of your project (if not already present), and create a `secrets.toml` file inside it. Add the following lines to the `secrets.toml` file, replacing `<your-mongo-uri>` with your MongoDB connection URI, the configuration for authentification (check [streamlit-authenticator documentation](https://github.com/mkhorasani/Streamlit-Authenticator) for more details):
 
    ```toml
    [mongo]
    uri = "<your-mongo-uri>"
+
+   [credentials.usernames.jsmith]
+   email = "jsmith@gmail.com"
+   name = "John Smith"
+   password = "abc"
+
+   [credentials.usernames.rbriggs]
+   email = "rbriggs@gmail.com"
+   name = "Rebecca Briggs"
+   password = "def"
+
+   [cookie]
+   expiry_days = 30
+   key = "random_signature_key"
+   name = "random_cookie_name"
+
+   [preauthorized]
+   emails = [ "melsby@gmail.com" ]
    ```
 
 5. Run the Streamlit app:

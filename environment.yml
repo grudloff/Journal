@@ -5,3 +5,6 @@ dependencies:
   - streamlit
   - pymongo
   - dnspython
+  - pip
+  - pip:
+    - streamlit-authenticator

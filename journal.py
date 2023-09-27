@@ -3,6 +3,9 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from datetime import datetime
 import streamlit_authenticator as stauth
+import whisper
+from pydub import AudioSegment
+import os
 
 TEXT_HEIGHT = 300
 
@@ -11,6 +14,62 @@ st.set_page_config(
     page_title="Personal Journal",
     page_icon="📖"
 )
+
+audio_tags = {'comments': 'Converted using pydub!'}
+
+upload_path = "uploads/"
+download_path = "downloads/"
+
+try:
+    os.mkdir(upload_path)
+except:
+    pass
+try:
+    os.mkdir(download_path)
+except:
+    pass
+
+@st.cache_data(persist="disk")
+def to_mp3(audio_file, output_audio_file, upload_path, download_path):
+    ## Converting Different Audio Formats To MP3 ##
+    if audio_file.name.split('.')[-1].lower()=="wav":
+        audio_data = AudioSegment.from_wav(os.path.join(upload_path,audio_file.name))
+        audio_data.export(os.path.join(download_path,output_audio_file), format="mp3", tags=audio_tags)
+
+    elif audio_file.name.split('.')[-1].lower()=="mp3":
+        audio_data = AudioSegment.from_mp3(os.path.join(upload_path,audio_file.name))
+        audio_data.export(os.path.join(download_path,output_audio_file), format="mp3", tags=audio_tags)
+
+    elif audio_file.name.split('.')[-1].lower()=="ogg":
+        audio_data = AudioSegment.from_ogg(os.path.join(upload_path,audio_file.name))
+        audio_data.export(os.path.join(download_path,output_audio_file), format="mp3", tags=audio_tags)
+
+    elif audio_file.name.split('.')[-1].lower()=="wma":
+        audio_data = AudioSegment.from_file(os.path.join(upload_path,audio_file.name),"wma")
+        audio_data.export(os.path.join(download_path,output_audio_file), format="mp3", tags=audio_tags)
+
+    elif audio_file.name.split('.')[-1].lower()=="aac":
+        audio_data = AudioSegment.from_file(os.path.join(upload_path,audio_file.name),"aac")
+        audio_data.export(os.path.join(download_path,output_audio_file), format="mp3", tags=audio_tags)
+
+    elif audio_file.name.split('.')[-1].lower()=="flac":
+        audio_data = AudioSegment.from_file(os.path.join(upload_path,audio_file.name),"flac")
+        audio_data.export(os.path.join(download_path,output_audio_file), format="mp3", tags=audio_tags)
+
+    elif audio_file.name.split('.')[-1].lower()=="flv":
+        audio_data = AudioSegment.from_flv(os.path.join(upload_path,audio_file.name))
+        audio_data.export(os.path.join(download_path,output_audio_file), format="mp3", tags=audio_tags)
+
+    elif audio_file.name.split('.')[-1].lower()=="mp4":
+        audio_data = AudioSegment.from_file(os.path.join(upload_path,audio_file.name),"mp4")
+        audio_data.export(os.path.join(download_path,output_audio_file), format="mp3", tags=audio_tags)
+    return output_audio_file
+
+@st.cache_resource()
+def process_audio(filename):
+    model = whisper.load_model("base")
+    result = model.transcribe(filename)
+    return result["text"]
 
 def reset_modifying():
     st.session_state["modifying"] = False
@@ -23,7 +82,7 @@ authenticator = stauth.Authenticate(
     )
 
 name, authentication_status, username = authenticator.login('Login', 'main')
-print(name, authentication_status, username)
+# print(name, authentication_status, username)
 
 if authentication_status:
     authenticator.logout('Logout', 'sidebar')
@@ -58,7 +117,22 @@ if authentication_status:
     if not st.session_state.get("modifying", False):
         # Add a new entry.
         st.subheader("New Entry")
-        entry = st.text_area(label="Entry", height=TEXT_HEIGHT, label_visibility="hidden")
+        # audio upload
+        uploaded_file = st.file_uploader("Optionally upload audio", type=["wav","mp3","ogg","wma","aac","flac","mp4","flv"])
+        if uploaded_file is not None:
+            audio_bytes = uploaded_file.read()
+            with open(os.path.join(upload_path, uploaded_file.name),"wb") as f:
+                f.write((uploaded_file).getbuffer())
+            with st.spinner(f"Processing Audio ... 💫"):
+                output_audio_file = uploaded_file.name.split('.')[0] + '.mp3'
+                output_audio_file = to_mp3(uploaded_file, output_audio_file, upload_path, download_path)
+                audio_file = open(os.path.join(download_path,output_audio_file), 'rb')
+                audio_bytes = audio_file.read()
+            with st.spinner(f"Generating Transcript... 💫"):
+                transcript = process_audio(str(os.path.abspath(os.path.join(download_path, output_audio_file))))
+        else:
+            transcript = None
+        entry = st.text_area(label="Entry", height=TEXT_HEIGHT, label_visibility="hidden", value=transcript)
         submit = st.button("Add entry", use_container_width=True)
 
         st.divider()

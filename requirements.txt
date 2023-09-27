@@ -1,2 +1,4 @@
 pymongo[srv]
 streamlit-authenticator
+openai-whisper
+pydub

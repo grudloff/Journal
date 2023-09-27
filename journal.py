@@ -6,6 +6,7 @@ import streamlit_authenticator as stauth
 import whisper
 from pydub import AudioSegment
 import os
+from audio_recorder_streamlit import audio_recorder
 
 TEXT_HEIGHT = 300
 
@@ -19,6 +20,7 @@ audio_tags = {'comments': 'Converted using pydub!'}
 
 upload_path = "uploads/"
 download_path = "downloads/"
+uploaded_file = "audiofile.wav"
 
 try:
     os.mkdir(upload_path)
@@ -116,11 +118,16 @@ if authentication_status:
 
     if not st.session_state.get("modifying", False):
         # Add a new entry.
-        st.subheader("New Entry")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.subheader("New Entry")
         # audio upload
-        uploaded_file = st.file_uploader("Optionally upload audio", type=["wav","mp3","ogg","wma","aac","flac","mp4","flv"])
-        if uploaded_file is not None:
-            audio_bytes = uploaded_file.read()
+        with col2:
+            audio_bytes = audio_recorder(
+                text="",
+                icon_size="3x",
+            )
+        if audio_bytes is not None:
             with open(os.path.join(upload_path, uploaded_file.name),"wb") as f:
                 f.write((uploaded_file).getbuffer())
             with st.spinner(f"Processing Audio ... 💫"):

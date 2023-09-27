@@ -136,7 +136,11 @@ if authentication_status:
                 icon_size="3x",
             )
         if audio_bytes is not None:
-            transcript = process_audio(audio_bytes)
+            try:
+                transcript = process_audio(audio_bytes)
+            except Exception as e:
+                st.warning("There was an issue while processing the audio, try again!")
+                print(e)
         else:
             transcript = None
         entry = st.text_area(label="Entry", height=TEXT_HEIGHT, label_visibility="hidden", value=transcript)

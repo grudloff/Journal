@@ -140,6 +140,7 @@ if authentication_status:
                 transcript = process_audio(audio_bytes)
             except Exception as e:
                 st.warning("There was an issue while processing the audio, try again!")
+                transcript = None
                 print(e)
         else:
             transcript = None

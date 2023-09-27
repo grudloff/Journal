@@ -17,6 +17,7 @@ This repository contains a simple web application for maintaining a personal jou
 ## Changelog
 
 - 01-09-2023: Added authentication through streamlit-authenticator package.
+- 27-09-2023: Added audio entries with transciption powered by openai's whisper.
 
 ## Getting Started
 

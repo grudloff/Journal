@@ -31,7 +31,6 @@ try:
 except:
     pass
 
-@st.cache_data(persist="disk")
 def to_mp3(audio_file, output_audio_file, upload_path, download_path):
     ## Converting Different Audio Formats To MP3 ##
     if audio_file.split('.')[-1].lower()=="wav":
@@ -67,10 +66,19 @@ def to_mp3(audio_file, output_audio_file, upload_path, download_path):
         audio_data.export(os.path.join(download_path,output_audio_file), format="mp3", tags=audio_tags)
     return output_audio_file
 
-@st.cache_resource()
+@st.cache_data()
 def process_audio(filename):
-    model = whisper.load_model("base")
-    result = model.transcribe(filename)
+    with open(os.path.join(upload_path, uploaded_file),"wb") as f:
+        f.write(audio_bytes)
+    with st.spinner(f"Processing Audio ... 💫"):
+        output_audio_file = uploaded_file.split('.')[0] + '.mp3'
+        output_audio_file = to_mp3(uploaded_file, output_audio_file, upload_path, download_path)
+        # audio_file = open(os.path.join(download_path,output_audio_file), 'rb')
+        # audio_bytes = audio_file.read()
+    with st.spinner(f"Generating Transcript... 💫"):
+        filename = str(os.path.abspath(os.path.join(download_path, output_audio_file)))
+        model = whisper.load_model("base")
+        result = model.transcribe(filename)
     return result["text"]
 
 def reset_modifying():
@@ -128,15 +136,7 @@ if authentication_status:
                 icon_size="3x",
             )
         if audio_bytes is not None:
-            with open(os.path.join(upload_path, uploaded_file),"wb") as f:
-                f.write(audio_bytes)
-            with st.spinner(f"Processing Audio ... 💫"):
-                output_audio_file = uploaded_file.split('.')[0] + '.mp3'
-                output_audio_file = to_mp3(uploaded_file, output_audio_file, upload_path, download_path)
-                # audio_file = open(os.path.join(download_path,output_audio_file), 'rb')
-                # audio_bytes = audio_file.read()
-            with st.spinner(f"Generating Transcript... 💫"):
-                transcript = process_audio(str(os.path.abspath(os.path.join(download_path, output_audio_file))))
+            transcript = process_audio(audio_bytes)
         else:
             transcript = None
         entry = st.text_area(label="Entry", height=TEXT_HEIGHT, label_visibility="hidden", value=transcript)

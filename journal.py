@@ -128,13 +128,13 @@ if authentication_status:
                 icon_size="3x",
             )
         if audio_bytes is not None:
-            with open(os.path.join(upload_path, uploaded_file.name),"wb") as f:
-                f.write((uploaded_file).getbuffer())
+            with open(os.path.join(upload_path, uploaded_file),"wb") as f:
+                f.write(audio_bytes)
             with st.spinner(f"Processing Audio ... 💫"):
-                output_audio_file = uploaded_file.name.split('.')[0] + '.mp3'
+                output_audio_file = uploaded_file.split('.')[0] + '.mp3'
                 output_audio_file = to_mp3(uploaded_file, output_audio_file, upload_path, download_path)
-                audio_file = open(os.path.join(download_path,output_audio_file), 'rb')
-                audio_bytes = audio_file.read()
+                # audio_file = open(os.path.join(download_path,output_audio_file), 'rb')
+                # audio_bytes = audio_file.read()
             with st.spinner(f"Generating Transcript... 💫"):
                 transcript = process_audio(str(os.path.abspath(os.path.join(download_path, output_audio_file))))
         else:
